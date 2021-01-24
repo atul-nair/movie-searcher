@@ -11,15 +11,22 @@ export function useAuth(){
 export function AuthProvider({children}) {
      //states of user
      const [currentUser, setCurrentUser] = useState()
+     const [loading, setLoading ] = useState(true)
 
      //creates users
      function signup(email, password) {
          return auth.createUserWithEmailAndPassword(email, password)
      }
 
+     //logs users in
+     function login(email, password) {
+        return auth.signInWithEmailAndPassword(email, password)
+    }
+
      useEffect(() => {
         //sets current user
         const unsubscribe = auth.onAuthStateChanged(user => {
+            setLoading(false)
             setCurrentUser(user)
         })
         return unsubscribe
@@ -30,11 +37,13 @@ export function AuthProvider({children}) {
     
     const value = {
         currentUser,
-        signup
+        signup,
+        login,
+        
     }
     return (
         <AuthContext.Provider value={value}>
-            {children}
+            {!loading && children}
         </AuthContext.Provider>
     )
 }
